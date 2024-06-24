@@ -1,0 +1,62 @@
+# Load necessary libraries
+library(ggplot2)
+library(plotly)
+
+# Create a data frame with the provided data
+survey_data <- data.frame(
+  Product = c("A", "B", "C", "D", "E"),
+  Price = c(50, 70, 60, 45, 55),
+  Rating = c(4.2, 3.8, 4.0, 4.5, 3.9),
+  Age_Group = factor(c("25-35", "35-45", "18-25", "45-55", "25-35"))
+)
+
+# 1. How do product ratings vary with both price and age group?
+print(survey_data)
+
+# 2. Create a 3D scatter plot to visualize the relationship between price, rating, and age group
+plot_ly(survey_data, x = ~Price, y = ~Rating, z = ~Age_Group, type = 'scatter3d', mode = 'markers') %>%
+  layout(title = "3D Scatter Plot of Price, Rating, and Age Group",
+         scene = list(xaxis = list(title = "Price ($)"),
+                      yaxis = list(title = "Rating (out of 5)"),
+                      zaxis = list(title = "Age Group")))
+
+# 3. Correlation between age group, product price, and consumer ratings based on the 3D plot
+# The plot created above can be used to visually inspect for correlations.
+
+# 4. Generate a 3D surface plot to show how product ratings change with variations in both price and age group
+age_levels <- c("18-25", "25-35", "35-45", "45-55")
+price_range <- seq(min(survey_data$Price), max(survey_data$Price), length.out = 10)
+age_range <- factor(age_levels, levels = age_levels)
+
+rating_matrix <- outer(price_range, age_levels, Vectorize(function(price, age) {
+  # Assuming a simple model for demonstration purposes:
+  mean(survey_data$Rating[survey_data$Price <= price & survey_data$Age_Group == age], na.rm = TRUE)
+}))
+
+rating_matrix[is.na(rating_matrix)] <- 0  # Replace NA values with 0 for demonstration
+
+plot_ly(x = ~price_range, y = ~age_range, z = ~rating_matrix, type = 'surface') %>%
+  layout(title = "3D Surface Plot of Ratings vs Price and Age Group",
+         scene = list(xaxis = list(title = "Price ($)"),
+                      yaxis = list(title = "Age Group"),
+                      zaxis = list(title = "Rating (out of 5)")))
+
+# 5. Compare the 3D plots of product ratings against both price and age group separately
+# 3D plot of Rating vs Price
+plot_ly(survey_data, x = ~Price, y = ~Rating, z = ~Age_Group, type = 'scatter3d', mode = 'markers') %>%
+  layout(title = "3D Scatter Plot of Rating vs Price",
+         scene = list(xaxis = list(title = "Price ($)"),
+                      yaxis = list(title = "Rating (out of 5)"),
+                      zaxis = list(title = "Age Group")))
+
+# 3D plot of Rating vs Age Group
+plot_ly(survey_data, x = ~Age_Group, y = ~Rating, z = ~Price, type = 'scatter3d', mode = 'markers') %>%
+  layout(title = "3D Scatter Plot of Rating vs Age Group",
+         scene = list(xaxis = list(title = "Age Group"),
+                      yaxis = list(title = "Rating (out of 5)"),
+                      zaxis = list(title = "Price ($)")))
+
+# Save plots to file if needed
+# ggsave("price_vs_rating_age_group.png")
+# saveWidget(plot_ly, "3d_scatter_plot.html")
+# saveWidget(plot_ly, "3d_surface_plot.html")
