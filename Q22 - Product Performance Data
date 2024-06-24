@@ -1,0 +1,51 @@
+# Load necessary libraries
+library(ggplot2)
+library(plotly)
+
+# Product performance data
+data <- data.frame(
+  Product = c("A", "B", "C", "D", "E"),
+  Price = c(50, 70, 60, 45, 55),
+  Units_Sold = c(1000, 800, 1200, 1500, 900),
+  Customer_Ratings = c(4.2, 4.0, 4.5, 3.8, 4.3)
+)
+
+# 1. Customer ratings variation with product price and units sold
+print(data)
+
+# 2. 3D scatter plot
+plot_3d_scatter <- plot_ly(data, x = ~Units_Sold, y = ~Price, z = ~Customer_Ratings, type = 'scatter3d', mode = 'markers') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Units Sold'),
+    yaxis = list(title = 'Price ($)'),
+    zaxis = list(title = 'Customer Ratings (out of 5)')
+  ))
+
+plot_3d_scatter
+
+# 3. Correlation between customer ratings, units sold, and product price
+cor(data$Customer_Ratings, data$Units_Sold)
+cor(data$Customer_Ratings, data$Price)
+
+# 4. 3D surface plot
+plot_3d_surface <- plot_ly(data, x = ~Units_Sold, y = ~Price, z = ~Customer_Ratings, type = 'mesh3d') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Units Sold'),
+    yaxis = list(title = 'Price ($)'),
+    zaxis = list(title = 'Customer Ratings (out of 5)')
+  ))
+
+plot_3d_surface
+
+# 5. Compare 3D plots
+# Customer ratings vs Units Sold
+plot_cr_vs_units_sold <- plot_ly(data, x = ~Units_Sold, y = ~Customer_Ratings, type = 'scatter', mode = 'markers') %>%
+  layout(xaxis = list(title = 'Units Sold'), yaxis = list(title = 'Customer Ratings (out of 5)'))
+
+# Customer ratings vs Price
+plot_cr_vs_price <- plot_ly(data, x = ~Price, y = ~Customer_Ratings, type = 'scatter', mode = 'markers') %>%
+  layout(xaxis = list(title = 'Price ($)'), yaxis = list(title = 'Customer Ratings (out of 5)'))
+
+# Print plots
+plot_cr_vs_units_sold
+plot_cr_vs_price
