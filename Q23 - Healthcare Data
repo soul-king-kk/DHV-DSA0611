@@ -1,0 +1,71 @@
+# Load necessary libraries
+library(ggplot2)
+library(plotly)
+
+# Create the data frame
+data <- data.frame(
+  Patient = c("A", "B", "C", "D", "E"),
+  Age = c(45, 55, 60, 50, 65),
+  SystolicBP = c(120, 130, 140, 125, 150),
+  DiastolicBP = c(80, 85, 90, 82, 95),
+  Cholesterol = c(180, 200, 220, 190, 240)
+)
+
+# 1. Variation of cholesterol level with both age and blood pressure among patients
+
+# 2. Create a 3D scatter plot
+plot_ly(data, x = ~Age, y = ~SystolicBP, z = ~Cholesterol, type = 'scatter3d', mode = 'markers') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Age'),
+    yaxis = list(title = 'Systolic Blood Pressure (mmHg)'),
+    zaxis = list(title = 'Cholesterol Level (mg/dL)')
+  ))
+
+# 3. Correlation between cholesterol level, age, and blood pressure based on the 3D plot
+# Visual inspection for correlation. For more precise correlation, calculate correlation coefficients.
+cor(data$Age, data$Cholesterol)
+cor(data$SystolicBP, data$Cholesterol)
+
+# 4. Generate a 3D surface plot
+
+# Create a grid of values
+age_seq <- seq(min(data$Age), max(data$Age), length.out = 30)
+bp_seq <- seq(min(data$SystolicBP), max(data$SystolicBP), length.out = 30)
+
+# Generate a grid of cholesterol levels
+cholesterol_grid <- outer(age_seq, bp_seq, function(a, b) {
+  predict(lm(Cholesterol ~ Age + SystolicBP, data = data), newdata = data.frame(Age = a, SystolicBP = b))
+})
+
+# Convert the grid to a data frame for plotting
+grid_df <- expand.grid(Age = age_seq, SystolicBP = bp_seq)
+grid_df$Cholesterol <- as.vector(cholesterol_grid)
+
+# 3D surface plot
+plot_ly(grid_df, x = ~Age, y = ~SystolicBP, z = ~Cholesterol, type = 'surface') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Age'),
+    yaxis = list(title = 'Systolic Blood Pressure (mmHg)'),
+    zaxis = list(title = 'Cholesterol Level (mg/dL)')
+  ))
+
+# 5. Compare the 3D plots of cholesterol levels against both age and blood pressure separately.
+
+# 3D scatter plot for Age vs Cholesterol
+plot_ly(data, x = ~Age, y = ~Cholesterol, z = ~SystolicBP, type = 'scatter3d', mode = 'markers') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Age'),
+    yaxis = list(title = 'Cholesterol Level (mg/dL)'),
+    zaxis = list(title = 'Systolic Blood Pressure (mmHg)')
+  ))
+
+# 3D scatter plot for Blood Pressure vs Cholesterol
+plot_ly(data, x = ~SystolicBP, y = ~Cholesterol, z = ~Age, type = 'scatter3d', mode = 'markers') %>%
+  layout(scene = list(
+    xaxis = list(title = 'Systolic Blood Pressure (mmHg)'),
+    yaxis = list(title = 'Cholesterol Level (mg/dL)'),
+    zaxis = list(title = 'Age')
+  ))
+
+# Output the code
+cat('R code successfully executed and 3D plots generated.')
