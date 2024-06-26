@@ -1,0 +1,102 @@
+# Load necessary libraries
+library(tidyverse)
+library(plotly)
+
+# Step 1: Load Data
+data <- read.csv(text = "StoreID,Region,Month,TotalSales,NumberOfCustomers,AverageTransactionValue
+1,North,January,10000,500,20
+2,South,January,15000,700,21.43
+3,East,January,12000,600,20
+4,West,January,13000,650,20
+5,North,February,9000,450,20
+6,South,February,16000,800,20
+7,East,February,14000,700,20
+8,West,February,11000,550,20
+9,North,March,11000,550,20
+10,South,March,17000,850,20
+11,East,March,13000,650,20
+12,West,March,15000,750,20
+13,North,April,12000,600,20
+14,South,April,18000,900,20
+15,East,April,16000,800,20
+16,West,April,14000,700,20
+17,North,May,13000,650,20
+18,South,May,19000,950,20
+19,East,May,15000,750,20
+20,West,May,16000,800,20
+21,North,June,14000,700,20
+22,South,June,20000,1000,20
+23,East,June,17000,850,20
+24,West,June,15000,750,20
+25,North,July,15000,750,20
+26,South,July,21000,1050,20
+27,East,July,16000,800,20
+28,West,July,14000,700,20
+29,North,August,16000,800,20
+30,South,August,22000,1100,20")
+
+# Step 2: Data Cleaning
+# Check for missing values
+sum(is.na(data))
+
+# Check for data types
+str(data)
+
+# Step 3: Data Processing
+# Convert 'Region' and 'Month' to factors
+data$Region <- as.factor(data$Region)
+data$Month <- as.factor(data$Month)
+
+# Step 4: Sales Analysis
+# Summary statistics
+summary(data)
+
+# Group by Region and calculate mean total sales
+region_summary <- data %>%
+  group_by(Region) %>%
+  summarise(MeanTotalSales = mean(TotalSales),
+            MeanNumberOfCustomers = mean(NumberOfCustomers),
+            MeanAverageTransactionValue = mean(AverageTransactionValue))
+
+# Group by Month and calculate mean total sales
+month_summary <- data %>%
+  group_by(Month) %>%
+  summarise(MeanTotalSales = mean(TotalSales),
+            MeanNumberOfCustomers = mean(NumberOfCustomers),
+            MeanAverageTransactionValue = mean(AverageTransactionValue))
+
+# Step 5: Visualization
+
+# Total Sales by Region
+plot_ly(data, x = ~Region, y = ~TotalSales, type = 'bar', color = ~Region) %>%
+  layout(title = "Total Sales by Region")
+
+# Total Sales by Month
+plot_ly(data, x = ~Month, y = ~TotalSales, type = 'bar', color = ~Month) %>%
+  layout(title = "Total Sales by Month")
+
+# Mean Total Sales by Region
+plot_ly(region_summary, x = ~Region, y = ~MeanTotalSales, type = 'bar', color = ~Region) %>%
+  layout(title = "Mean Total Sales by Region")
+
+# Mean Total Sales by Month
+plot_ly(month_summary, x = ~Month, y = ~MeanTotalSales, type = 'bar', color = ~Month) %>%
+  layout(title = "Mean Total Sales by Month")
+
+# 3D Visualization of Total Sales, Number of Customers, and Region
+plot_ly(data, x = ~TotalSales, y = ~NumberOfCustomers, z = ~Region, color = ~Region, type = 'scatter3d', mode = 'markers') %>%
+  layout(title = "3D Visualization of Total Sales, Number of Customers, and Region")
+
+# Create a list of plots for visualization
+plot_list <- list()
+
+# Generate 15 plots for visualization
+for (i in 1:15) {
+  plot_list[[i]] <- plot_ly(data, x = ~Month, y = ~TotalSales, type = 'scatter', mode = 'markers') %>%
+    layout(title = paste("Plot", i))
+}
+
+# Display all plots
+for (plot in plot_list) {
+  print(plot)
+}
